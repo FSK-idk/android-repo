@@ -1,47 +1,77 @@
 package co.feip.fefu2025
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
+import android.util.Log
+import android.widget.TextView
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import co.feip.fefu2025.ui.theme.FEFU2025AndroidBaseRepoTheme
+import androidx.core.content.ContextCompat
+
 
 class MainActivity : ComponentActivity() {
+    private var count: Int = 0
+    private val internetReceiver = InternetReceiver()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent {
-            FEFU2025AndroidBaseRepoTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "FEIP",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+
+        @Suppress("DEPRECATION")
+        ContextCompat.registerReceiver(
+            this,
+            internetReceiver,
+            IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION), // deprecated
+            ContextCompat.RECEIVER_EXPORTED
+        )
+
+        setContentView(R.layout.main_activity)
+
+        val counter = findViewById<TextView>(R.id.counter)
+        counter.text = "$count"
+        counter.setOnClickListener {
+            counter.text = "${++count}"
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(internetReceiver)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("count", count)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        count = savedInstanceState.getInt("count")
+        findViewById<TextView>(R.id.counter).text = "$count"
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+class InternetReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    FEFU2025AndroidBaseRepoTheme {
-        Greeting("Android")
+        val network = connectivityManager.activeNetwork
+        val capabilities = connectivityManager.getNetworkCapabilities(network)
+
+        Log.d(
+            "InternetReceiver",
+            when {
+                network == null || capabilities == null -> "Internet is disabled"
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> "Wifi is enabled"
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> "Cellular is enabled"
+                else -> "Internet is disabled"
+            }
+        )
     }
 }
