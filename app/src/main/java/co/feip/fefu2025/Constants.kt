@@ -1,0 +1,50 @@
+package co.feip.fefu2025
+
+class Constants {
+    companion object {
+        val languages = arrayOf(
+            "C++",
+            "C",
+            "Kotlin",
+            "Java",
+            "Go",
+            "Python",
+            "C#",
+            "JS",
+            "PHP",
+            "R",
+            "SQL",
+            "Swift",
+            "Perl",
+            "ASM",
+            "VB",
+            "Ruby",
+            "ObjC",
+            "Rust",
+            "D",
+            "Dart",
+            "COBOL",
+            "Julia",
+            "Scala",
+            "Scheme",
+            "Ada",
+            "Lisp",
+            "Apex",
+            "Lua",
+            "Fortran",
+            "Haskell",
+            "TS",
+            "Algol",
+            "Bash",
+            "Carbon",
+            "Curl",
+            "Elixir",
+            "F#",
+            "ML",
+            "OCaml",
+            "OpenCL",
+            "Zig",
+            "Hello World!"
+        )
+    }
+}
