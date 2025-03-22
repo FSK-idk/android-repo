@@ -76,20 +76,6 @@ fun RepositoryInformation(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    painterResource(R.drawable.mdisourcebranch),
-                    contentDescription = "",
-                    modifier = Modifier.size(18.dp)
-                )
-                Text(
-                    "${
-                        CompactDecimalFormat.getInstance(
-                            context.resources.configuration.locales[0],
-                            CompactDecimalFormat.CompactStyle.SHORT
-                        ).format(forkNumber)
-                    } ${if (starNumber == 1) "fork" else "forks"}", fontSize = 14.sp
-                )
-                Spacer(Modifier.width(10.dp))
-                Icon(
                     painterResource(R.drawable.mdistar),
                     contentDescription = "",
                     modifier = Modifier.size(18.dp)
@@ -101,6 +87,22 @@ fun RepositoryInformation(
                             CompactDecimalFormat.CompactStyle.SHORT
                         ).format(starNumber)
                     } ${if (starNumber == 1) "star" else "stars"}", fontSize = 14.sp
+                )
+
+                Spacer(Modifier.width(10.dp))
+
+                Icon(
+                    painterResource(R.drawable.mdisourcebranch),
+                    contentDescription = "",
+                    modifier = Modifier.size(18.dp)
+                )
+                Text(
+                    "${
+                        CompactDecimalFormat.getInstance(
+                            context.resources.configuration.locales[0],
+                            CompactDecimalFormat.CompactStyle.SHORT
+                        ).format(forkNumber)
+                    } ${if (starNumber == 1) "fork" else "forks"}", fontSize = 14.sp
                 )
             }
             Text("Created $date", fontSize = 12.sp, fontStyle = FontStyle.Italic)
