@@ -23,6 +23,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:padding="3dp"
+            android:textColor="@color/md_theme_onBackground"
             tools:text="Kotlin" />
 
         <TextView

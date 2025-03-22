@@ -37,11 +37,17 @@ android {
     buildFeatures {
         compose = true
         viewBinding = true
+        //noinspection DataBindingWithoutKapt
         dataBinding = true
     }
 }
 
 dependencies {
+    implementation(libs.kotlinx.datetime)
+    implementation(libs.androidx.ui.text.google.fonts)
+    implementation(libs.material)
+    implementation(libs.material3)
+    implementation(libs.material.icons.core)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
