@@ -15,58 +15,67 @@ class FlexBoxLayout @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : ViewGroup(context, attrs, defStyleAttr) {
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val availableWidth = MeasureSpec.getSize(widthMeasureSpec)
-        var curLeft = marginLeft + paddingLeft
-        var curTop = marginTop + paddingTop
-        var maxLeft = 0
-        var curMaxHeight = 0
+        val availableWidth =
+            MeasureSpec.getSize(widthMeasureSpec) - marginLeft - marginRight - paddingLeft - paddingRight
+        var currentWidth = marginLeft + paddingLeft
+        var currentHeight = marginTop + paddingTop
+        var maxWidth = 0
+        var currentMaxHeight = 0
         var childState = 0
 
-        for (i in 0..<childCount) {
+
+        for (i in 0 until childCount) {
             val child = getChildAt(i)
             if (child.isGone) continue
             measureChild(child, widthMeasureSpec, heightMeasureSpec)
-            if (curLeft + child.measuredWidth > availableWidth - marginLeft - marginRight - paddingLeft - paddingRight) {
-                maxLeft = max(maxLeft, curLeft)
-                curLeft = marginLeft + paddingLeft
-                curTop += curMaxHeight
-                curMaxHeight = 0
+            if (currentWidth + child.measuredWidth > availableWidth) {
+                maxWidth = max(maxWidth, currentWidth)
+                currentWidth = marginLeft + paddingLeft
+                currentHeight += currentMaxHeight
+                currentMaxHeight = 0
             }
-            curLeft += child.measuredWidth
-            curMaxHeight = max(curMaxHeight, child.measuredHeight)
+            currentWidth += child.measuredWidth
+            currentMaxHeight = max(currentMaxHeight, child.measuredHeight)
             childState = combineMeasuredStates(childState, child.measuredState)
         }
-        maxLeft = max(maxLeft, curLeft)
-        curTop += curMaxHeight + marginBottom + paddingBottom
+        maxWidth = max(maxWidth, currentWidth)
+        currentHeight += currentMaxHeight + marginBottom + paddingBottom
 
-        maxLeft = max(maxLeft, suggestedMinimumWidth)
-        curTop = max(curTop, suggestedMinimumHeight)
+        maxWidth = max(maxWidth, suggestedMinimumWidth)
+        currentHeight = max(currentHeight, suggestedMinimumHeight)
 
         setMeasuredDimension(
-            resolveSizeAndState(maxLeft, widthMeasureSpec, childState), resolveSizeAndState(
-                curTop, heightMeasureSpec, childState shl MEASURED_HEIGHT_STATE_SHIFT
+            resolveSizeAndState(maxWidth, widthMeasureSpec, childState),
+            resolveSizeAndState(
+                currentHeight,
+                heightMeasureSpec,
+                childState shl MEASURED_HEIGHT_STATE_SHIFT
             )
         )
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        var curLeft = marginLeft + paddingLeft
-        var curTop = marginTop + paddingTop
-        var curMaxHeight = 0
+        val availableWidth = measuredWidth - marginLeft - marginRight - paddingLeft - paddingRight
+        var currentWidth = marginLeft + paddingLeft
+        var currentHeight = marginTop + paddingTop
+        var currentMaxHeight = 0
 
-        for (i in 0..<childCount) {
+        for (i in 0 until childCount) {
             val child = getChildAt(i)
             if (child.isGone) continue
-            if (curLeft + child.measuredWidth > measuredWidth - marginLeft - marginRight - paddingLeft - paddingRight) {
-                curLeft = marginLeft + paddingLeft
-                curTop += curMaxHeight
-                curMaxHeight = 0
+            if (currentWidth + child.measuredWidth > availableWidth) {
+                currentWidth = marginLeft + paddingLeft
+                currentHeight += currentMaxHeight
+                currentMaxHeight = 0
             }
             child.layout(
-                curLeft, curTop, curLeft + child.measuredWidth, curTop + child.measuredHeight
+                currentWidth,
+                currentHeight,
+                currentWidth + child.measuredWidth,
+                currentHeight + child.measuredHeight
             )
-            curLeft += child.measuredWidth
-            curMaxHeight = max(curMaxHeight, child.measuredHeight)
+            currentWidth += child.measuredWidth
+            currentMaxHeight = max(currentMaxHeight, child.measuredHeight)
         }
     }
 }
