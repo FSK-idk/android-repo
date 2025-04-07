@@ -1,4 +1,4 @@
-package co.feip.fefu2025
+package co.feip.fefu2025.presentation.shared
 
 import android.content.Context
 import android.util.AttributeSet
@@ -9,7 +9,6 @@ import androidx.core.view.marginLeft
 import androidx.core.view.marginRight
 import androidx.core.view.marginTop
 import kotlin.math.max
-
 
 class FlexBoxLayout @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0

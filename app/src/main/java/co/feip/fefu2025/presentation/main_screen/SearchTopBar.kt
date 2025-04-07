@@ -1,4 +1,4 @@
-package co.feip.fefu2025
+package co.feip.fefu2025.presentation.main_screen
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -16,10 +16,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchTopBar(modifier: Modifier) {
+fun SearchTopBar(
+    modifier: Modifier = Modifier,
+) {
     // for the future
     var text by remember { mutableStateOf("") }
     var enabled by remember { mutableStateOf(false) }
@@ -41,8 +42,8 @@ fun SearchTopBar(modifier: Modifier) {
         },
         expanded = expanded,
         onExpandedChange = { expanded = it },
-        modifier = modifier,
         shape = RectangleShape,
         content = {},
+        modifier = modifier,
     )
 }

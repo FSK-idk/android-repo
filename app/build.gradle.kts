@@ -46,6 +46,8 @@ dependencies {
     implementation(libs.material)
     implementation(libs.material3)
     implementation(libs.material.icons.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.core)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
