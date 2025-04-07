@@ -1,7 +1,6 @@
-package co.feip.fefu2025
+package co.feip.fefu2025.presentation.main_screen
 
 import android.content.res.Configuration
-import android.icu.text.CompactDecimalFormat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,90 +27,77 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import co.feip.fefu2025.R
+import co.feip.fefu2025.domain.model.Repo
+import co.feip.fefu2025.domain.use_case.FormatDecimalUseCase
 import co.feip.fefu2025.ui.theme.AndroidRepoTheme
 
-
-class RepositoryCardData(
-    var name: String,
-    var description: String,
-    var forkNumber: Int,
-    var starNumber: Int,
-    var icon: Int,
-)
-
-
 @Composable
-fun RepositoryCard(
-    data: RepositoryCardData,
+fun RepoCard(
+    repo: Repo,
+    formatDecimal: (Int) -> String,
     modifier: Modifier,
 ) {
-    val context = LocalContext.current
     Box(
         modifier = modifier
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(5.dp),
-            modifier = Modifier
+            modifier = Modifier.Companion
                 .clip(shape = RoundedCornerShape(10.dp))
                 .background(MaterialTheme.colorScheme.primaryContainer)
                 .padding(10.dp)
         ) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(5.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.Companion.CenterVertically,
             ) {
                 Icon(
-                    painterResource(data.icon),
+                    painterResource(repo.icon),
                     contentDescription = "",
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.Companion.size(40.dp)
                 )
 
                 Text(
-                    data.name,
+                    repo.name,
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.Companion.Bold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
             }
 
             Text(
-                data.description,
-                overflow = TextOverflow.Ellipsis,
+                repo.description,
+                overflow = TextOverflow.Companion.Ellipsis,
                 fontSize = 12.sp,
-                modifier = Modifier
+                modifier = Modifier.Companion
                     .fillMaxWidth()
                     .weight(1f),
             )
 
             Row(
                 horizontalArrangement = Arrangement.spacedBy(5.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Companion.CenterVertically
             ) {
                 Icon(
                     Icons.Filled.Star,
                     contentDescription = "",
-                    modifier = Modifier.size(15.dp)
+                    modifier = Modifier.Companion.size(15.dp)
                 )
 
                 Text(
-                    CompactDecimalFormat.getInstance(
-                        context.resources.configuration.locales[0],
-                        CompactDecimalFormat.CompactStyle.SHORT
-                    ).format(data.starNumber),
+                    formatDecimal(repo.starNumber),
                     fontSize = 12.sp,
                 )
 
                 Icon(
                     painterResource(R.drawable.ic_mdi_source_branch),
                     contentDescription = "",
-                    modifier = Modifier.size(15.dp),
+                    modifier = Modifier.Companion.size(15.dp),
                 )
 
                 Text(
-                    CompactDecimalFormat.getInstance(
-                        context.resources.configuration.locales[0],
-                        CompactDecimalFormat.CompactStyle.SHORT
-                    ).format(data.forkNumber),
+                    formatDecimal(repo.forkNumber),
                     fontSize = 12.sp,
                 )
             }
@@ -119,23 +105,26 @@ fun RepositoryCard(
     }
 }
 
-
 @Composable
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
 fun PreviewRepositoryCard() {
-    val data = RepositoryCardData(
+    val context = LocalContext.current
+
+    val repo = Repo(
         name = "android-repo",
         description = "Repository for homework on android studio.",
         starNumber = 31500,
         forkNumber = 13000,
         icon = R.drawable.ic_launcher_foreground,
     )
+    val formatDecimal = { number: Int -> FormatDecimalUseCase(context)(number) }
 
     AndroidRepoTheme {
         Surface {
-            RepositoryCard(
-                data = data,
-                modifier = Modifier.size(300.dp, 150.dp)
+            RepoCard(
+                repo = repo,
+                formatDecimal = formatDecimal,
+                modifier = Modifier.Companion.size(300.dp, 150.dp)
             )
         }
     }

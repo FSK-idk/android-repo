@@ -1,5 +1,6 @@
-package co.feip.fefu2025
+package co.feip.fefu2025.presentation.repo_screen
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,14 +18,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import co.feip.fefu2025.Constants
+import co.feip.fefu2025.domain.model.Lang
 import co.feip.fefu2025.ui.theme.AndroidRepoTheme
 
-
 @Composable
-fun LanguageStrip(
-    languageLabelsData: Array<LanguageLabelData>,
+fun LangStrip(
+    langs: Array<Lang>,
     stripWidth: Dp,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier,
@@ -40,33 +42,32 @@ fun LanguageStrip(
             val width = size.width
             var acc = 0f
 
-            for (data in languageLabelsData) {
+            for (lang in langs) {
                 drawLine(
                     start = Offset(x = width * acc / 100, y = height / 2),
-                    end = Offset(x = width * (acc + data.percentage) / 100, y = height / 2),
-                    color = Color(Constants.languageColor.getValue(data.name)),
+                    end = Offset(x = width * (acc + lang.percentage) / 100, y = height / 2),
+                    color = lang.color,
                     strokeWidth = stripWidth.toPx()
                 )
-                acc += data.percentage
+                acc += lang.percentage
             }
         }
     }
 }
 
-
 @Composable
-@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
 fun LanguageStripPreview() {
-    val langData = arrayOf(
-        LanguageLabelData("C++", 85.0f),
-        LanguageLabelData("Lua", 10f),
-        LanguageLabelData("CMake", 5f),
+    val langs = arrayOf(
+        Lang("C++", 85.0f, Color(Constants.languageColor.getValue("C++"))),
+        Lang("Lua", 10f, Color(Constants.languageColor.getValue("Lua"))),
+        Lang("CMake", 5f, Color(Constants.languageColor.getValue("CMake"))),
     )
 
     AndroidRepoTheme {
         Surface {
-            LanguageStrip(
-                languageLabelsData = langData,
+            LangStrip(
+                langs = langs,
                 stripWidth = 10.dp,
                 modifier = Modifier
                     .size(400.dp, 200.dp)
