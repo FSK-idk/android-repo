@@ -11,7 +11,9 @@ import androidx.core.view.marginTop
 import kotlin.math.max
 
 class FlexBoxLayout @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0,
 ) : ViewGroup(context, attrs, defStyleAttr) {
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val availableWidth =
@@ -21,7 +23,6 @@ class FlexBoxLayout @JvmOverloads constructor(
         var maxWidth = 0
         var currentMaxHeight = 0
         var childState = 0
-
 
         for (i in 0 until childCount) {
             val child = getChildAt(i)

@@ -1,4 +1,4 @@
-package co.feip.fefu2025.presentation.repo_screen
+package co.feip.fefu2025.presentation.repo_page
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Canvas
@@ -24,16 +24,16 @@ import co.feip.fefu2025.ui.theme.AndroidRepoTheme
 
 @Composable
 fun LangStrip(
+    modifier: Modifier = Modifier,
     langs: Array<Lang>,
     stripWidth: Dp,
-    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center,
     ) {
         Canvas(
-            Modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .height(stripWidth)
                 .clip(RoundedCornerShape(stripWidth / 2))
@@ -67,11 +67,11 @@ fun LanguageStripPreview() {
     AndroidRepoTheme {
         Surface {
             LangStrip(
-                langs = langs,
-                stripWidth = 10.dp,
                 modifier = Modifier
                     .size(400.dp, 200.dp)
-                    .padding(10.dp)
+                    .padding(10.dp),
+                langs = langs,
+                stripWidth = 10.dp,
             )
         }
     }

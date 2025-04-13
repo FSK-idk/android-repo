@@ -1,13 +1,13 @@
 package co.feip.fefu2025.di
 
 import co.feip.fefu2025.data.repository.RepoPageRepositoryImpl
-import co.feip.fefu2025.data.repository.RepoRepositoryImpl
+import co.feip.fefu2025.data.repository.RepoListRepositoryImpl
 import co.feip.fefu2025.data.storage.RepoPageStorage
-import co.feip.fefu2025.data.storage.RepoStorage
-import co.feip.fefu2025.data.storage.repo.RepoStorageImpl
+import co.feip.fefu2025.data.storage.RepoListStorage
+import co.feip.fefu2025.data.storage.repo_list.RepoListStorageImpl
 import co.feip.fefu2025.data.storage.repo_page.RepoPageStorageImpl
 import co.feip.fefu2025.domain.repository.RepoPageRepository
-import co.feip.fefu2025.domain.repository.RepoRepository
+import co.feip.fefu2025.domain.repository.RepoListRepository
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -15,6 +15,6 @@ import org.koin.dsl.module
 val dataModule = module {
     singleOf(::RepoPageStorageImpl) { bind<RepoPageStorage>() }
     singleOf(::RepoPageRepositoryImpl) { bind<RepoPageRepository>() }
-    singleOf(::RepoStorageImpl) { bind<RepoStorage>() }
-    singleOf(::RepoRepositoryImpl) { bind<RepoRepository>() }
+    singleOf(::RepoListStorageImpl) { bind<RepoListStorage>() }
+    singleOf(::RepoListRepositoryImpl) { bind<RepoListRepository>() }
 }

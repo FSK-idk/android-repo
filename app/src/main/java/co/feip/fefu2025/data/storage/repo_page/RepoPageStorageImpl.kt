@@ -5,12 +5,15 @@ import co.feip.fefu2025.R
 import co.feip.fefu2025.data.storage.RepoPageStorage
 import co.feip.fefu2025.data.storage.dto.LangDto
 import co.feip.fefu2025.data.storage.dto.RepoPageDto
+import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDate
 
 class RepoPageStorageImpl: RepoPageStorage {
-    override fun get(): RepoPageDto {
+    override suspend fun get(id: Int): RepoPageDto {
+        delay(1000L) // for example
         return RepoPageDto(
-            name = "android-repo",
+            id = id,
+            name = "android-repo $id",
             description = "Repository for homework on android studio.",
             starNumber = 31500,
             forkNumber = 13000,

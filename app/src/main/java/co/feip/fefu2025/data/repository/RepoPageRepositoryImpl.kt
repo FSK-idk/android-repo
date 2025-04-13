@@ -10,13 +10,13 @@ import co.feip.fefu2025.domain.repository.RepoPageRepository
 class RepoPageRepositoryImpl(
     private val repoPageStorage: RepoPageStorage
 ) : RepoPageRepository {
-    override fun getRepoPage(): RepoPage {
-        val dto: RepoPageDto = repoPageStorage.get()
-        return mapToDomain(dto)
+    override suspend fun getRepoPage(repoId: Int): RepoPage {
+        return mapToDomain(repoPageStorage.get(repoId))
     }
 
     private fun mapToDomain(dto: RepoPageDto): RepoPage {
         return RepoPage(
+            id = dto.id,
             name = dto.name,
             description = dto.description,
             starNumber = dto.starNumber,

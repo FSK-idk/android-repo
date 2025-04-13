@@ -6,7 +6,7 @@ import co.feip.fefu2025.domain.repository.RepoPageRepository
 class GetRepoPageUseCase(
     private val repoPageRepository: RepoPageRepository
 ) {
-    operator fun invoke(): RepoPage {
-        return repoPageRepository.getRepoPage()
+    suspend operator fun invoke(repoId: Int): RepoPage {
+        return repoPageRepository.getRepoPage(repoId)
     }
 }
