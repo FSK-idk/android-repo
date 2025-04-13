@@ -1,4 +1,4 @@
-package co.feip.fefu2025.presentation.repo_screen
+package co.feip.fefu2025.presentation.repo_page
 
 import android.annotation.SuppressLint
 import android.content.Context

@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">android-repo</string>
+    <string name="Created">Created %1$s</string>
+    <string name="Languages">Languages</string>
+    <string name="About">About</string>
+    <string name="Starred">Starred</string>
+    <string name="Popular">Popular</string>
+    <string name="Search">Search</string>
 </resources>

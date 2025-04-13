@@ -1,4 +1,4 @@
-package co.feip.fefu2025.presentation.repo_screen
+package co.feip.fefu2025.presentation.shared
 
 import android.content.res.Configuration
 import androidx.compose.material.icons.Icons
@@ -18,12 +18,13 @@ import co.feip.fefu2025.ui.theme.AndroidRepoTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ButtonTopBar(
+fun BackTopBar(
+    modifier: Modifier = Modifier,
     title: String,
     onBackClick: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     TopAppBar(
+        modifier = modifier,
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             titleContentColor = MaterialTheme.colorScheme.primary,
@@ -35,25 +36,23 @@ fun ButtonTopBar(
             IconButton(onClick = onBackClick) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = ""
+                    contentDescription = null,
                 )
             }
         },
-        modifier = modifier,
     )
 }
 
 @Composable
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
-fun ButtonTopBarPreview() {
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+fun BackTopBarPreview() {
     val title = "Some title"
-    val onBackClick = {}
 
     AndroidRepoTheme {
         Surface {
-            ButtonTopBar(
+            BackTopBar(
                 title = title,
-                onBackClick = onBackClick,
+                onBackClick = {},
             )
         }
     }

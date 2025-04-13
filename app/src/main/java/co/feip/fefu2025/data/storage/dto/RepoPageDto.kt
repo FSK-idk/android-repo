@@ -3,11 +3,12 @@ package co.feip.fefu2025.data.storage.dto
 import kotlinx.datetime.LocalDate
 
 class RepoPageDto(
-    var name: String,
-    var description: String,
-    var starNumber: Int,
-    var forkNumber: Int,
-    var creationDate: LocalDate,
-    var langs: Array<LangDto>,
-    var icon: Int,
+    val id: Int,
+    val name: String,
+    val description: String,
+    val starNumber: Int,
+    val forkNumber: Int,
+    val creationDate: LocalDate,
+    val langs: Array<LangDto>,
+    val icon: Int,
 )

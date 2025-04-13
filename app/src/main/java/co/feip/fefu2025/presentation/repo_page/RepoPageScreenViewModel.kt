@@ -1,18 +1,27 @@
-package co.feip.fefu2025.presentation.repo_screen
+package co.feip.fefu2025.presentation.repo_page
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import co.feip.fefu2025.R
 import co.feip.fefu2025.domain.model.Lang
 import co.feip.fefu2025.domain.use_case.FormatDecimalUseCase
 import co.feip.fefu2025.domain.use_case.GetRepoPageUseCase
+import co.feip.fefu2025.nav.Destination
+import co.feip.fefu2025.nav.Navigator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
-class RepoScreenViewModel(
+class RepoPageScreenViewModel(
+    private val data: Destination.RepoPageScreen,
+    private val navigator: Navigator,
     private val getRepoPageUseCase: GetRepoPageUseCase,
     private val formatDecimalUseCase: FormatDecimalUseCase,
 ) : ViewModel() {
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
+
     private val _isDescriptionExpanded = MutableStateFlow(false)
     val isDescriptionExpanded = _isDescriptionExpanded.asStateFlow()
 
@@ -34,22 +43,28 @@ class RepoScreenViewModel(
     private val _repoLangs = MutableStateFlow<Array<Lang>>(arrayOf())
     val repoLangs = _repoLangs.asStateFlow()
 
-    private val _repoIcon = MutableStateFlow<Int>(0)
+    private val _repoIcon = MutableStateFlow<Int>(R.drawable.ic_launcher_foreground)
     val repoIcon = _repoIcon.asStateFlow()
 
     init {
-        updateScreen()
+        loadData()
     }
 
-    fun updateScreen() {
-        val repo = getRepoPageUseCase()
-        _repoName.value = repo.name
-        _repoDescription.value = repo.description
-        _repoStarNumber.value = repo.starNumber
-        _repoForkNumber.value = repo.forkNumber
-        _repoCreationDate.value = repo.creationDate
-        _repoLangs.value = repo.langs
-        _repoIcon.value = repo.icon
+    fun loadData() {
+        viewModelScope.launch {
+            _isLoading.value = true
+
+            val repo = getRepoPageUseCase(data.repoId)
+            _repoName.value = repo.name
+            _repoDescription.value = repo.description
+            _repoStarNumber.value = repo.starNumber
+            _repoForkNumber.value = repo.forkNumber
+            _repoCreationDate.value = repo.creationDate
+            _repoLangs.value = repo.langs
+            _repoIcon.value = repo.icon
+
+            _isLoading.value = false
+        }
     }
 
     fun formatDecimal(number: Int): String {
@@ -61,6 +76,8 @@ class RepoScreenViewModel(
     }
 
     fun onBackClick() {
-        Log.d("RepoScreenVM", "back clicked")
+        viewModelScope.launch {
+            navigator.navigateUp()
+        }
     }
 }
