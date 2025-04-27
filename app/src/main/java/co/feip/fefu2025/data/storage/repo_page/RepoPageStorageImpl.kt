@@ -1,30 +1,18 @@
 package co.feip.fefu2025.data.storage.repo_page
 
-import co.feip.fefu2025.Constants
-import co.feip.fefu2025.R
 import co.feip.fefu2025.data.storage.RepoPageStorage
-import co.feip.fefu2025.data.storage.dto.LangDto
+import co.feip.fefu2025.data.storage.StabData
 import co.feip.fefu2025.data.storage.dto.RepoPageDto
 import kotlinx.coroutines.delay
-import kotlinx.datetime.LocalDate
+import kotlin.random.Random
 
-class RepoPageStorageImpl: RepoPageStorage {
+class RepoPageStorageImpl : RepoPageStorage {
     override suspend fun get(id: Int): RepoPageDto {
-        delay(1000L) // for example
-        return RepoPageDto(
-            id = id,
-            name = "android-repo $id",
-            description = "Repository for homework on android studio.",
-            starNumber = 31500,
-            forkNumber = 13000,
-            creationDate = LocalDate(2025, 3, 3),
-            langs = arrayOf(
-                LangDto("Kotlin", 85.0f, Constants.Companion.languageColor.getValue("Kotlin")),
-                LangDto("Python", 10f, Constants.Companion.languageColor.getValue("Python")),
-                LangDto("C++", 3f, Constants.Companion.languageColor.getValue("C++")),
-                LangDto("Lua", 2f, Constants.Companion.languageColor.getValue("Lua")),
-            ),
-            icon = R.drawable.ic_launcher_foreground,
-        )
+        delay(1000L)
+        if (Random.nextInt(0, 2) == 1) {
+            throw Exception("Internal error")
+        }
+
+        return StabData.stabs[id].repoPageDto
     }
 }

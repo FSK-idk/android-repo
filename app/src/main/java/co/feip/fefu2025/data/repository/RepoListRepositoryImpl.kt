@@ -16,6 +16,10 @@ class RepoListRepositoryImpl(
         return repoListStorage.getPopularList().map { mapToDomain(it) }
     }
 
+    override suspend fun getRepoListByName(name: String): List<Repo> {
+        return repoListStorage.getRepoListByName(name).map { mapToDomain(it) }
+    }
+
     fun mapToDomain(dto: RepoDto): Repo {
         return Repo(
             id = dto.id,
