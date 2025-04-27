@@ -6,4 +6,6 @@
     <string name="Starred">Starred</string>
     <string name="Popular">Popular</string>
     <string name="Search">Search</string>
+    <string name="Error_occurred">Error occurred</string>
+    <string name="Retry">Retry</string>
 </resources>
