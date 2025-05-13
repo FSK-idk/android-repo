@@ -18,14 +18,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import co.feip.fefu2025.Constants
+import co.feip.fefu2025.presentation.repo_page.ColorData
 import co.feip.fefu2025.domain.model.Lang
 import co.feip.fefu2025.ui.theme.AndroidRepoTheme
 
 @Composable
 fun LangStrip(
     modifier: Modifier = Modifier,
-    langs: Array<Lang>,
+    langs: List<Lang>,
     stripWidth: Dp,
 ) {
     Box(
@@ -46,7 +46,7 @@ fun LangStrip(
                 drawLine(
                     start = Offset(x = width * acc / 100, y = height / 2),
                     end = Offset(x = width * (acc + lang.percentage) / 100, y = height / 2),
-                    color = lang.color,
+                    color = Color(ColorData.languageColor.getValue(lang.name)),
                     strokeWidth = stripWidth.toPx()
                 )
                 acc += lang.percentage
@@ -58,10 +58,10 @@ fun LangStrip(
 @Composable
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
 fun LanguageStripPreview() {
-    val langs = arrayOf(
-        Lang("C++", 85.0f, Color(Constants.languageColor.getValue("C++"))),
-        Lang("Lua", 10f, Color(Constants.languageColor.getValue("Lua"))),
-        Lang("CMake", 5f, Color(Constants.languageColor.getValue("CMake"))),
+    val langs = listOf(
+        Lang("C++", 85.0f),
+        Lang("Lua", 10f),
+        Lang("CMake", 5f),
     )
 
     AndroidRepoTheme {

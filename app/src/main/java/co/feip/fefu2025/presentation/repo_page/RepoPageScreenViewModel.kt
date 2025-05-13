@@ -1,93 +1,108 @@
 package co.feip.fefu2025.presentation.repo_page
 
+import android.content.Context
+import android.icu.text.CompactDecimalFormat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import co.feip.fefu2025.R
-import co.feip.fefu2025.domain.model.Lang
-import co.feip.fefu2025.domain.use_case.FormatDecimalUseCase
 import co.feip.fefu2025.domain.use_case.GetRepoPageUseCase
+import co.feip.fefu2025.domain.use_case.StarRepoUseCase
+import co.feip.fefu2025.domain.use_case.UnstarRepoUseCase
 import co.feip.fefu2025.nav.Destination
 import co.feip.fefu2025.nav.Navigator
 import co.feip.fefu2025.presentation.loading.LoadState
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDate
 
 class RepoPageScreenViewModel(
     private val data: Destination.RepoPageScreen,
+    private val appContext: Context,
     private val navigator: Navigator,
     private val getRepoPageUseCase: GetRepoPageUseCase,
-    private val formatDecimalUseCase: FormatDecimalUseCase,
+    private val starRepoUseCase: StarRepoUseCase,
+    private val unstarRepoUseCase: UnstarRepoUseCase,
 ) : ViewModel() {
-    private val _loadState = MutableStateFlow<LoadState>(LoadState.NotLoading)
-    val loadState = _loadState.asStateFlow()
+    private val _details = RepoPageScreenStates()
 
-    private val _isDescriptionExpanded = MutableStateFlow(false)
-    val isDescriptionExpanded = _isDescriptionExpanded.asStateFlow()
-
-    private val _repoName = MutableStateFlow("")
-    val repoName = _repoName.asStateFlow()
-
-    private val _repoDescription = MutableStateFlow("")
-    val repoDescription = _repoDescription.asStateFlow()
-
-    private val _repoStarNumber = MutableStateFlow(0)
-    val repoStarNumber = _repoStarNumber.asStateFlow()
-
-    private val _repoForkNumber = MutableStateFlow(0)
-    val repoForkNumber = _repoForkNumber.asStateFlow()
-
-    private val _repoCreationDate = MutableStateFlow<LocalDate>(LocalDate(1970, 1, 1))
-    val repoCreationDate = _repoCreationDate.asStateFlow()
-
-    private val _repoLangs = MutableStateFlow<Array<Lang>>(arrayOf())
-    val repoLangs = _repoLangs.asStateFlow()
-
-    private val _repoIcon = MutableStateFlow<Int>(R.drawable.ic_launcher_foreground)
-    val repoIcon = _repoIcon.asStateFlow()
+    val loadState = _details.loadState.asStateFlow()
+    val descriptionExpanded = _details.descriptionExpanded.asStateFlow()
+    val repoName = _details.repoName.asStateFlow()
+    val repoDescription = _details.repoDescription.asStateFlow()
+    val repoStarNumber = _details.repoStarNumber.asStateFlow()
+    val repoForkNumber = _details.repoForkNumber.asStateFlow()
+    val repoCreationDate = _details.repoCreationDate.asStateFlow()
+    val repoLangs = _details.repoLangs.asStateFlow()
+    val repoStarred = _details.repoStarred.asStateFlow()
+    val repoIconUrl = _details.repoIconUrl.asStateFlow()
 
     init {
-        loadData()
+        refresh()
     }
 
-    fun loadData() {
-        viewModelScope.launch {
-            try {
-                _loadState.value = LoadState.Loading
 
-                val repo = getRepoPageUseCase(data.repoId)
-                _repoName.value = repo.name
-                _repoDescription.value = repo.description
-                _repoStarNumber.value = repo.starNumber
-                _repoForkNumber.value = repo.forkNumber
-                _repoCreationDate.value = repo.creationDate
-                _repoLangs.value = repo.langs
-                _repoIcon.value = repo.icon
+//  repo page screen
 
-                _loadState.value = LoadState.NotLoading
-            } catch (e: Exception) {
-                _loadState.value = LoadState.Error
-            }
+
+    private suspend fun loadData() {
+        try {
+            _details.loadState.value = LoadState.Loading
+
+            val repo = getRepoPageUseCase(data.repoId)
+            _details.repoName.value = repo.name
+            _details.repoDescription.value = repo.description
+            _details.repoStarNumber.value = repo.starNumber
+            _details.repoForkNumber.value = repo.forkNumber
+            _details.repoCreationDate.value = repo.creationDate
+            _details.repoLangs.value = repo.langs
+            _details.repoStarred.value = repo.starred
+            _details.repoIconUrl.value = repo.iconUrl
+
+            _details.loadState.value = LoadState.NotLoading
+        } catch (e: Exception) {
+            _details.loadState.value = LoadState.Error
         }
-
     }
 
-    fun formatDecimal(number: Int): String {
-        return formatDecimalUseCase(number)
+    fun refresh() {
+        viewModelScope.launch {
+            loadData()
+        }
     }
 
     fun turnDescription() {
-        _isDescriptionExpanded.value = !_isDescriptionExpanded.value
+        _details.descriptionExpanded.value = !_details.descriptionExpanded.value
     }
 
-    fun onRetryClick() {
-        loadData()
+    fun starRepo() {
+        viewModelScope.launch {
+            val response =
+                if (_details.repoStarred.value) unstarRepoUseCase(data.repoId)
+                else starRepoUseCase(data.repoId)
+
+            if (response) {
+                _details.repoStarNumber.value += if (_details.repoStarred.value) -1 else 1
+                _details.repoStarred.value = !_details.repoStarred.value
+            }
+        }
     }
 
-    fun onBackClick() {
+
+//  screen navigation
+
+
+    fun goBack() {
         viewModelScope.launch {
             navigator.navigateUp()
         }
+    }
+
+
+//  misc
+
+
+    fun formatDecimal(number: Int): String {
+        return CompactDecimalFormat.getInstance(
+            appContext.resources.configuration.locales[0],
+            CompactDecimalFormat.CompactStyle.SHORT
+        ).format(number)
     }
 }

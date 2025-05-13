@@ -15,13 +15,11 @@ import co.feip.fefu2025.ui.theme.AndroidRepoTheme
 fun LoadingScreen(
     modifier: Modifier = Modifier
 ) {
-    Box(modifier = modifier) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
-        }
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
     }
 }
 

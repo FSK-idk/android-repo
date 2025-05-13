@@ -9,6 +9,7 @@ class RepoPage(
     val forkNumber: Int,
     val starNumber: Int,
     val creationDate: LocalDate,
-    val langs: Array<Lang>,
-    val icon: Int,
+    val langs: List<Lang>,
+    val starred: Boolean,
+    val iconUrl: String,
 )
