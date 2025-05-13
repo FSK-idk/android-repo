@@ -20,22 +20,21 @@ import co.feip.fefu2025.ui.theme.AndroidRepoTheme
 @Composable
 fun ErrorScreen(
     modifier: Modifier = Modifier,
-    onRetryClick:  (() -> Unit)? = null,
+    onRetryClick: (() -> Unit)? = null,
 ) {
-    Box(modifier = modifier) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(
-                space = 10.dp,
-                alignment = Alignment.CenterVertically),
-        ) {
-            Text(text = stringResource(R.string.Error_occurred))
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(
+            space = 10.dp,
+            alignment = Alignment.CenterVertically
+        ),
+    ) {
+        Text(text = stringResource(R.string.Error_occurred))
 
-            if (onRetryClick != null) {
-                Button(onClick = onRetryClick) {
-                    Text(text = stringResource(R.string.Retry))
-                }
+        if (onRetryClick != null) {
+            Button(onClick = onRetryClick) {
+                Text(text = stringResource(R.string.Retry))
             }
         }
     }

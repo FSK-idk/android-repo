@@ -1,9 +1,9 @@
 package co.feip.fefu2025.presentation.repo_list
 
+import android.content.Context
+import android.icu.text.CompactDecimalFormat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import co.feip.fefu2025.domain.model.Repo
-import co.feip.fefu2025.domain.use_case.FormatDecimalUseCase
 import co.feip.fefu2025.domain.use_case.GetPopularRepoListUseCase
 import co.feip.fefu2025.domain.use_case.GetRepoListByNameUseCase
 import co.feip.fefu2025.domain.use_case.GetStarredRepoListUseCase
@@ -11,105 +11,214 @@ import co.feip.fefu2025.nav.Destination
 import co.feip.fefu2025.nav.Navigator
 import co.feip.fefu2025.presentation.loading.LoadState
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+@OptIn(FlowPreview::class)
 class RepoListScreenViewModel(
+    private val appContext: Context,
     private val navigator: Navigator,
     private val getStarredRepoListUseCase: GetStarredRepoListUseCase,
     private val getPopularRepoListUseCase: GetPopularRepoListUseCase,
     private val getRepoListByNameUseCase: GetRepoListByNameUseCase,
-    private val formatDecimalUseCase: FormatDecimalUseCase,
 ) : ViewModel() {
-    private val _loadState = MutableStateFlow<LoadState>(LoadState.NotLoading)
-    val loadState = _loadState.asStateFlow()
+    private val _details = RepoListScreenStates()
 
-    private val _searchLoadState = MutableStateFlow<LoadState>(LoadState.NotLoading)
-    val searchLoadState = _searchLoadState.asStateFlow()
+    val loadState = _details.loadState.asStateFlow()
+    val scrollState = _details.scrollState.asStateFlow()
+    val starredRepos = _details.starredRepos.asStateFlow()
+    val popularRepos = _details.popularRepos.asStateFlow()
+    val pageNumber = _details.pageNumber.asStateFlow()
 
-    private val _starredRepos = MutableStateFlow<List<Repo>>(listOf())
-    val starredRepos = _starredRepos.asStateFlow()
+    private val _searchDetails = SearchTopBarStates()
 
-    private val _popularRepos = MutableStateFlow<List<Repo>>(listOf())
-    val popularRepos = _popularRepos.asStateFlow()
+    val searchLoadState = _searchDetails.loadState.asStateFlow()
+    val searchScrollState = _searchDetails.scrollState.asStateFlow()
+    val searchQuery = _searchDetails.query.asStateFlow()
+    val searchRepos = _searchDetails.repos.asStateFlow()
+    val searchPageNumber = _searchDetails.pageNumber.asStateFlow()
 
-    private val _searchQuery = MutableStateFlow("")
-    val searchQuery = _searchQuery.asStateFlow()
-
-    private val _searchRepos = MutableStateFlow<List<Repo>>(listOf())
-
-    @OptIn(FlowPreview::class)
-    val searchRepos = searchQuery
-        .debounce(1000L)
-        .combine(_searchRepos) { query, repos ->
-            if (query.isNotEmpty()) {
-                try {
-                    _searchLoadState.value = LoadState.Loading
-
-                    val loadedRepos = getRepoListByNameUseCase(query)
-
-                    _searchLoadState.value = LoadState.NotLoading
-
-                    loadedRepos
-                } catch (e: Exception) {
-                    _searchLoadState.value = LoadState.Error
-                    repos
-                }
-            } else {
-                repos
-            }
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = _searchRepos.value
-        )
+    private var searchJob: Job? = null
 
     init {
-        loadData()
+        viewModelScope.launch {
+            _searchDetails.query
+                .debounce(1000L)
+                .collect {
+                    _searchDetails.pageNumber.value = 1
+                    searchJob?.cancel()
+                    searchJob = viewModelScope.launch {
+                        loadSearchData()
+                    }
+                }
+        }
+
+        refresh()
     }
 
-    fun loadData() {
+
+//  repo list screen
+
+
+    private suspend fun loadData() {
+        try {
+            _details.loadState.value = LoadState.Loading
+
+            _details.starredRepos.value = getStarredRepoListUseCase(
+                perPage = 10,
+                pageNumber = 1
+            )
+            _details.popularRepos.value = getPopularRepoListUseCase(
+                perPage = 20,
+                pageNumber = _details.pageNumber.value
+            )
+
+            _details.loadState.value = LoadState.NotLoading
+        } catch (e: Exception) {
+            _details.loadState.value = LoadState.Error
+        }
+    }
+
+    fun refresh() {
         viewModelScope.launch {
+            loadData()
+        }
+    }
+
+
+//  repo list screen navigation
+
+
+    fun scrollToTop() {
+        viewModelScope.launch {
+            _details.scrollState.value.scrollToItem(0)
+        }
+    }
+
+    fun openFirstPage() {
+        if (_details.pageNumber.value != 1) {
+            _details.pageNumber.value = 1
+            refresh()
+            scrollToTop()
+        }
+    }
+
+    fun openPrevPage() {
+        if (_details.pageNumber.value != 1) {
+            _details.pageNumber.value -= 1
+            refresh()
+            scrollToTop()
+        }
+    }
+
+    fun openNextPage() {
+        _details.pageNumber.value += 1
+        refresh()
+        scrollToTop()
+    }
+
+
+//  search top bar
+
+
+    private suspend fun loadSearchData() {
+        if (_searchDetails.query.value.isNotEmpty()) {
             try {
-                _loadState.value = LoadState.Loading
+                _searchDetails.loadState.value = LoadState.Loading
 
-                _starredRepos.value = getStarredRepoListUseCase()
-                _popularRepos.value = getPopularRepoListUseCase()
+                _searchDetails.repos.value =
+                    getRepoListByNameUseCase(
+                        name = _searchDetails.query.value,
+                        perPage = 20,
+                        pageNumber = _searchDetails.pageNumber.value
+                    )
 
-                _loadState.value = LoadState.NotLoading
+                _searchDetails.loadState.value = LoadState.NotLoading
             } catch (e: Exception) {
-                _loadState.value = LoadState.Error
+                _searchDetails.loadState.value = LoadState.Error
+            }
+        } else {
+            _searchDetails.repos.value = listOf()
+        }
+    }
+
+    fun refreshSearch() {
+        viewModelScope.launch {
+            loadSearchData()
+        }
+    }
+
+    fun onSearchQueryChange(query: String) {
+        _searchDetails.query.value = query
+    }
+
+
+//  search top bar navigation
+
+
+    fun scrollSearchToTop() {
+        viewModelScope.launch {
+            _searchDetails.scrollState.value.scrollToItem(0)
+        }
+    }
+
+    fun openSearchFirstPage() {
+        if (_searchDetails.pageNumber.value != 1) {
+            _searchDetails.pageNumber.value = 1
+            searchJob?.cancel()
+            searchJob = viewModelScope.launch {
+                refreshSearch()
+                scrollSearchToTop()
             }
         }
     }
 
-    fun formatDecimal(number: Int): String {
-        return formatDecimalUseCase(number)
+    fun openSearchPrevPage() {
+        if (_searchDetails.pageNumber.value != 1) {
+            _searchDetails.pageNumber.value -= 1
+            searchJob?.cancel()
+            searchJob = viewModelScope.launch {
+                refreshSearch()
+                scrollSearchToTop()
+            }
+        }
     }
 
-    fun onSearchedQueryChange(query: String) {
-        _searchQuery.value = query
+    fun openSearchNextPage() {
+        _searchDetails.pageNumber.value += 1
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            refreshSearch()
+            scrollSearchToTop()
+        }
     }
 
-    fun onStarredClick() {
+
+//  screen navigation
+
+
+    fun goToStarred() {
         viewModelScope.launch {
             navigator.navigate(Destination.StarredRepoListScreen)
         }
     }
 
-    fun onRetryClick() {
-        loadData()
-    }
-
-    fun onRepoClick(repoId: Int) {
+    fun goToRepo(repoId: Int) {
         viewModelScope.launch {
             navigator.navigate(Destination.RepoPageScreen(repoId))
         }
+    }
+
+
+//  misc
+
+
+    fun formatDecimal(number: Int): String {
+        return CompactDecimalFormat.getInstance(
+            appContext.resources.configuration.locales[0],
+            CompactDecimalFormat.CompactStyle.SHORT
+        ).format(number)
     }
 }

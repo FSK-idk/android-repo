@@ -6,7 +6,7 @@ import co.feip.fefu2025.domain.repository.RepoListRepository
 class GetPopularRepoListUseCase(
     private val repoListRepository: RepoListRepository
 ) {
-    suspend operator fun invoke(): List<Repo> {
-        return repoListRepository.getPopularRepoList()
+    suspend operator fun invoke(perPage: Int, pageNumber: Int): List<Repo> {
+        return repoListRepository.getPopularRepoList(perPage, pageNumber)
     }
 }

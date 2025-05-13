@@ -1,7 +1,6 @@
-package co.feip.fefu2025
+package co.feip.fefu2025.presentation.repo_page
 
-
-class Constants {
+class ColorData {
     companion object {
         // from https://github.com/ozh/github-colors
         val languageColor = mapOf(

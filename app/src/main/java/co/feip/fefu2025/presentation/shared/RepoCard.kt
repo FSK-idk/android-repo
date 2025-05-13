@@ -1,6 +1,7 @@
 package co.feip.fefu2025.presentation.shared
 
 import android.content.res.Configuration
+import android.icu.text.CompactDecimalFormat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
@@ -31,8 +33,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import co.feip.fefu2025.R
 import co.feip.fefu2025.domain.model.Repo
-import co.feip.fefu2025.domain.use_case.FormatDecimalUseCase
 import co.feip.fefu2025.ui.theme.AndroidRepoTheme
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 
 @Composable
 fun RepoCard(
@@ -56,10 +60,16 @@ fun RepoCard(
                 horizontalArrangement = Arrangement.spacedBy(5.dp),
                 verticalAlignment = Alignment.Companion.CenterVertically,
             ) {
-                Icon(
-                    modifier = Modifier.Companion.size(40.dp),
-                    painter = painterResource(repo.icon),
+                AsyncImage(
+                    modifier = Modifier.size(30.dp),
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(repo.iconUrl)
+                        .crossfade(true)
+                        .build(),
+                    error = painterResource(R.drawable.ic_launcher_foreground),
+                    placeholder = painterResource(R.drawable.ic_launcher_foreground),
                     contentDescription = null,
+                    contentScale = ContentScale.Crop,
                 )
 
                 Text(
@@ -116,6 +126,7 @@ fun Label(
     )
 }
 
+
 @Composable
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 fun PreviewRepositoryCard() {
@@ -127,16 +138,15 @@ fun PreviewRepositoryCard() {
         description = "Repository for homework on android studio.",
         starNumber = 31500,
         forkNumber = 13000,
-        icon = R.drawable.ic_launcher_foreground,
+        iconUrl = "",
     )
-    val formatDecimal = { number: Int -> FormatDecimalUseCase(context)(number) }
 
     AndroidRepoTheme {
         Surface {
             RepoCard(
                 modifier = Modifier.Companion.size(300.dp, 150.dp),
                 repo = repo,
-                formatDecimal = formatDecimal,
+                formatDecimal = { it.toString() },
                 onClick = {},
             )
         }

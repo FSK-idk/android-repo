@@ -6,7 +6,7 @@ import co.feip.fefu2025.domain.repository.RepoListRepository
 class GetStarredRepoListUseCase(
     private val repoListRepository: RepoListRepository
 ) {
-    suspend operator fun invoke(): List<Repo> {
-        return repoListRepository.getStarredRepoList()
+    suspend operator fun invoke(perPage: Int, pageNumber: Int): List<Repo> {
+        return repoListRepository.getStarredRepoList(perPage, pageNumber)
     }
 }

@@ -6,5 +6,5 @@ class Repo(
     val description: String,
     val forkNumber: Int,
     val starNumber: Int,
-    val icon: Int,
+    val iconUrl: String,
 )

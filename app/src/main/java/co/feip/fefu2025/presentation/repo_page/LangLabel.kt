@@ -6,7 +6,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import androidx.compose.ui.graphics.Color
-import co.feip.fefu2025.Constants
+import co.feip.fefu2025.presentation.repo_page.ColorData
 import co.feip.fefu2025.R
 import co.feip.fefu2025.databinding.LayoutLanguageLabelBinding
 import co.feip.fefu2025.domain.model.Lang
@@ -20,7 +20,7 @@ class LangLabel @JvmOverloads constructor(
     private val binding: LayoutLanguageLabelBinding =
         LayoutLanguageLabelBinding.inflate(LayoutInflater.from(context), this, true)
 
-    private var _lang: Lang = Lang("", 0f, Color(0))
+    private var _lang: Lang = Lang("", 0f)
     var lang: Lang
         get() = _lang
         set(data) {
@@ -29,7 +29,7 @@ class LangLabel @JvmOverloads constructor(
             @SuppressLint("SetTextI18n")
             binding.percentage.text = "${"%.1f".format(data.percentage)}%"
             binding.circle.drawable.mutate()
-                .setTint(Constants.Companion.languageColor.getValue(data.name).toInt())
+                .setTint(ColorData.Companion.languageColor.getValue(data.name).toInt())
         }
 
     init {
@@ -38,6 +38,6 @@ class LangLabel @JvmOverloads constructor(
         )
         val name = typedArray.getString(R.styleable.LanguageLabel_name)
         val percentage = typedArray.getFloat(R.styleable.LanguageLabel_percentage, 0.0f)
-        lang = Lang(name ?: "", percentage, Color(0))
+        lang = Lang(name ?: "", percentage, )
     }
 }
